@@ -1,0 +1,150 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Rol {
+  id       Int       @id @default(autoincrement())
+  nombre   String    @unique @db.VarChar(50)
+  usuarios Usuario[]
+}
+
+model Usuario {
+  id        Int       @id @default(autoincrement())
+  email     String    @unique @db.VarChar(80)
+  password  String    @db.VarChar(255)
+  nombre    String    @db.VarChar(80)
+  rolId     Int
+  rol       Rol       @relation(fields: [rolId], references: [id], onDelete: Restrict)
+  createdAt DateTime  @default(now())
+  docentes  Docente[]
+  pagos     Pago[]
+}
+
+model Grado {
+  id              Int             @id @default(autoincrement())
+  numero          Int             @unique
+  nombre          String          @db.VarChar(50)
+  secciones       Seccion[]
+  matriculas      Matricula[]
+  configuraciones Configuracion[]
+  asistencias     Asistencia[]
+}
+
+model Seccion {
+  id      Int    @id @default(autoincrement())
+  gradoId Int
+  nombre  String @db.VarChar(20)
+  grado   Grado  @relation(fields: [gradoId], references: [id], onDelete: Cascade)
+}
+
+model Docente {
+  id           Int     @id @default(autoincrement())
+  usuarioId    Int
+  usuario      Usuario @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  especialidad String  @db.VarChar(80)
+}
+
+model Encargado {
+  id         Int      @id @default(autoincrement())
+  nombre     String   @db.VarChar(80)
+  parentesco String   @db.VarChar(20)
+  identidad  String   @db.VarChar(20)
+  telefono   String   @db.VarChar(8)
+  correo     String?  @db.VarChar(80)
+  alumnos    Alumno[]
+}
+
+model Emergencia {
+  id       Int      @id @default(autoincrement())
+  nombre   String   @db.VarChar(80)
+  telefono String   @db.VarChar(8)
+  alumnos  Alumno[]
+}
+
+model Alumno {
+  id           Int          @id @default(autoincrement())
+  codigo       String       @unique @db.VarChar(10)
+  nombres      String       @db.VarChar(80)
+  apellidos    String       @db.VarChar(80)
+  nacimiento   DateTime     @db.Date
+  sexo         String       @db.Char(1)
+  identidad    String       @db.VarChar(20)
+  direccion    String       @db.VarChar(120)
+  salud        String       @db.VarChar(120)
+  encargadoId  Int?
+  encargado    Encargado?   @relation(fields: [encargadoId], references: [id], onDelete: SetNull)
+  emergenciaId Int?
+  emergencia   Emergencia?  @relation(fields: [emergenciaId], references: [id], onDelete: SetNull)
+  matriculas   Matricula[]
+  asistencias  Asistencia[]
+  notas        Nota[]
+}
+
+model Matricula {
+  id       Int     @id @default(autoincrement())
+  alumnoId Int
+  alumno   Alumno  @relation(fields: [alumnoId], references: [id], onDelete: Cascade)
+  gradoId  Int
+  grado    Grado   @relation(fields: [gradoId], references: [id], onDelete: Restrict)
+  anio     Int
+  cuotas   Cuota[]
+}
+
+model Cuota {
+  id          Int       @id @default(autoincrement())
+  matriculaId Int
+  matricula   Matricula @relation(fields: [matriculaId], references: [id], onDelete: Cascade)
+  label       String    @db.VarChar(60)
+  monto       Decimal   @db.Decimal(10, 2)
+  vence       DateTime  @db.Date
+  pago        Pago?
+}
+
+model Pago {
+  id        Int      @id @default(autoincrement())
+  recibo    Int      @unique
+  cuotaId   Int      @unique
+  cuota     Cuota    @relation(fields: [cuotaId], references: [id], onDelete: Cascade)
+  monto     Decimal  @db.Decimal(10, 2)
+  metodo    String   @db.VarChar(20)
+  fecha     DateTime @db.Date
+  usuarioId Int?
+  usuario   Usuario? @relation(fields: [usuarioId], references: [id], onDelete: SetNull)
+}
+
+model Configuracion {
+  id        Int     @id @default(autoincrement())
+  gradoId   Int
+  grado     Grado   @relation(fields: [gradoId], references: [id], onDelete: Cascade)
+  matricula Decimal @default(0) @db.Decimal(10, 2)
+  pension   Decimal @default(0) @db.Decimal(10, 2)
+
+  @@unique([gradoId])
+}
+
+model Asistencia {
+  id       Int    @id @default(autoincrement())
+  alumnoId Int
+  alumno   Alumno @relation(fields: [alumnoId], references: [id], onDelete: Cascade)
+  gradoId  Int
+  grado    Grado  @relation(fields: [gradoId], references: [id], onDelete: Cascade)
+  fecha    String @db.VarChar(10)
+  estado   String @db.VarChar(20)
+
+  @@unique([alumnoId, fecha])
+}
+
+model Nota {
+  id       Int      @id @default(autoincrement())
+  alumnoId Int
+  alumno   Alumno   @relation(fields: [alumnoId], references: [id], onDelete: Cascade)
+  materia  String   @db.VarChar(80)
+  nota     Decimal? @db.Decimal(5, 2)
+
+  @@unique([alumnoId, materia])
+}
