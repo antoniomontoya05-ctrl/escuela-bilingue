@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Escuela Bilingüe Horizontes · Matrícula</title>
+<link rel="stylesheet" href="css/estilos.css"></head><body>
+<div id="login"><div class="card"><h2>Escuela Bilingüe Horizontes</h2><p class="sub">Sistema de matrícula</p>
+<label>Usuario<input id="u" autocomplete="off"></label><label style="margin-top:8px">Contraseña<input id="p" type="password"></label>
+<button id="bt">Ingresar</button><p id="err" class="er"></p>
+<p class="sub" style="font-size:13px">Prueba: <b>secretaria</b> o <b>docente</b>, contraseña <b>1234</b>.</p></div></div>
+<div id="app" hidden><header><b>Escuela Bilingüe Horizontes</b><span><span id="who"></span> <button class="s" onclick="location.reload()">Salir</button></span></header><nav id="tabs"></nav><main id="view"></main></div>
+
+<!-- Orden de carga: de la capa más baja a la más alta -->
+<!-- CAPA 1 · DATOS -->
+<script src="js/datos/curriculo.js"></script>
+<script src="js/datos/repositorio.js"></script>
+<!-- CAPA 2 · NEGOCIO -->
+<script src="js/negocio/validaciones.js"></script>
+<script src="js/negocio/auth.service.js"></script>
+<script src="js/negocio/matricula.service.js"></script>
+<script src="js/negocio/pago.service.js"></script>
+<script src="js/negocio/reporte.service.js"></script>
+<script src="js/negocio/configuracion.service.js"></script>
+<script src="js/negocio/docente.service.js"></script>
+<!-- CAPA 3 · PRESENTACIÓN -->
+<script src="js/presentacion/ui.js"></script>
+<script src="js/presentacion/vistas/matricular.js"></script>
+<script src="js/presentacion/vistas/alumnos.js"></script>
+<script src="js/presentacion/vistas/pagos.js"></script>
+<script src="js/presentacion/vistas/reportes.js"></script>
+<script src="js/presentacion/vistas/configuracion.js"></script>
+<script src="js/presentacion/vistas/docente.js"></script>
+<script src="js/presentacion/app.js"></script>
+</body></html>
